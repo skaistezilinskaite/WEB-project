@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Login</title>
+    <link rel="stylesheet" href="/assets/css/yo.css">
+</head>
+<body>
+    <div class="container">
+        <form class = "sign_form" action="/signup" method="get" name="form" onsubmit="return validated(event)">
+            <button type="submit" >Sign up</button>
+        </form>
+        <h1 class="label">User Login</h1>
+
+        {{#if message}}
+            <div class="alert {{messageClass}}" role="alert">
+                {{message}}
+            </div>
+        {{/if}}
+
+        <form class = "login_form" action="/login" method="post" name="form" onsubmit="return validated(event)">
+            <div class = "font"> Username</div>
+            <input autocomplete = "off" type="text" name="username" class="form-control">
+            <div id="username_error">Please enter your username</div>
+            <div class ="font font2">Password</div>
+            <input type= "password" name="password" class="form-control">
+            <div id="password_error">Please enter your password</div>
+            <button type="submit" >Login</button>
+        </form>
+    </div>
+    <script src="aa.js"></script>
+    <script src="/assets/js/jquery.js"></script>
+<script src="/assets/js/bootstrap.js"></script>
+<script>
+  //Validate inputs
+
+/*var username = document.forms['form']['username'];
+var password = document.forms['form']['password'];
+
+var username_error = document.getElementById('username_error');
+var password_error = document.getElementById('password_error');
+
+username.addEventListener('textInput', username_Verify);
+password.addEventListener('textInput', password_Verify);
+
+function validated(event){
+    if (event.target.elements.username.value.length == 0){
+        event.target.elements.username.style.border ="1px solid red";
+        event.target.elements.username_error.style.display = "block";
+        event.target.elements.username.focus();
+        return false;
+    }
+    if (event.target.elements.password.value.length == 0){
+        event.target.elements.password.style.border ="1px solid red";
+        event.target.elements.password_error.style.display = "block";
+        event.target.elements.password.focus();
+        return false;
+    } 
+}*/
+
+var username = document.forms['form']['username'];
+var password = document.forms['form']['password'];
+
+var username_error = document.getElementById('username_error');
+var password_error = document.getElementById('password_error');
+
+username.addEventListener('textInput', username_Verify);
+password.addEventListener('textInput', password_Verify);
+
+function validated(){
+    if (username.value.length == 0){
+        username.style.border ="1px solid red";
+        username_error.style.display = "block";
+        username.focus();
+        return false;
+    }
+    if (password.value.length == 0){
+        password.style.border ="1px solid red";
+        password_error.style.display = "block";
+        password.focus();
+        return false;
+    } 
+}
+
+function username_Verify(){
+    if (username.value.length >=1){
+        username.style.border = "1px solid silver";
+        username_error.style.display = "none";
+        return true;
+    }
+}
+
+function password_Verify(){
+    if (password.value.length >=1){
+        password.style.border = "1px solid silver";
+        password_error.style.display = "none";
+        return true;
+    }
+}
+</script>
+</body>
+</html>
