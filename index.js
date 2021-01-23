@@ -43,9 +43,9 @@ const generateAuthToken = () => {
 const authTokens = {};
 
 const getHashedPassword = (password) => {
-    const sha256 = crypto.createHash('sha256');
-    const hash = sha256.update(password).digest('base64');
-    return hash;
+  const sha256 = crypto.createHash('sha256');
+  const hash = sha256.update(password).digest('base64');
+  return hash;
 }
 
 app.use((req, res, next) => {
@@ -60,12 +60,12 @@ app.use((req, res, next) => {
 
 const requireAuth = (req, res, next) => {
   if (req.user) {
-      next();
+    next();
   } else {
-      res.render('login', {
-          message: 'Please login to continue',
-          messageClass: 'alert-danger'
-      });
+    res.render('login', {
+      message: 'Please login to continue',
+      messageClass: 'alert-danger'
+    });
   }
 };
 
@@ -82,10 +82,32 @@ app.get('/signup', (req, res) => {
 app.post('/signup/save', (req, res) => {
   let data = { username: req.body.username, password: req.body.password };
   data.password = getHashedPassword(data.password);
-  let sql = "INSERT INTO users SET ?";
-  let query = conn.query(sql, data, (err, results) => {
+  let sql = "SELECT * FROM users WHERE username = '" + req.body.username + "'";
+  let query = conn.query(sql, (err, results) => {
+    console.log("Received results with count of " + results.length);
     if (err) throw err;
-    res.redirect('/');
+    if (results.length > 0) {
+      res.render('sign', {
+        message: 'Such username already exists',
+        messageClass: 'alert-danger'
+      });
+    }
+    else {
+      let sql = "INSERT INTO users SET ?";
+      let query = conn.query(sql, data, (err, results) => {
+        if (err) {
+          res.render('sign', {
+            message: 'Try again',
+            messageClass: 'alert-danger'
+          });
+          return;
+        }
+      });
+    }
+    res.render('login', {
+      message: 'Successfully signed up',
+      messageClass: 'alert-danger'
+    });
   });
 });
 // check for duplicate username
@@ -115,6 +137,8 @@ app.post('/login', (req, res) => {
   });
 });
 
+
+
 //route for homepage
 app.get('/products', requireAuth, (req, res) => {
   let sql = "SELECT * FROM expenses";
@@ -127,7 +151,7 @@ app.get('/products', requireAuth, (req, res) => {
 });
 
 //route for insert data
-app.post('/products/save', requireAuth,(req, res) => {
+app.post('/products/save', requireAuth, (req, res) => {
   let data = { expense_type: req.body.expense_type, expense_price: req.body.expense_price };
   let sql = "INSERT INTO expenses SET ?";
   let query = conn.query(sql, data, (err, results) => {
@@ -137,7 +161,7 @@ app.post('/products/save', requireAuth,(req, res) => {
 });
 
 //route for update data
-app.post('/products/update', requireAuth,(req, res) => {
+app.post('/products/update', requireAuth, (req, res) => {
   let sql = "UPDATE expenses SET expense_type='" + req.body.expense_type + "', expense_price='" + req.body.expense_price + "' WHERE expense_id=" + req.body.id;
   let query = conn.query(sql, (err, results) => {
     if (err) throw err;
@@ -154,7 +178,7 @@ app.post('/products/delete', requireAuth, (req, res) => {
   });
 });
 
-app.get('/logout', requireAuth, (req, res) => {
+app.post('/logout', requireAuth, (req, res) => {
   const authToken = req.cookies['authToken'];
   authTokens[authToken] = null;
   res.render('login', {

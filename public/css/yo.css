@@ -102,3 +102,9 @@ body{
 .sign_form button:hover{
     background: #a3ccee;
 }
+
+.alertmessage{
+margin: auto;
+    padding: 10px;
+    text-align: center;
+}

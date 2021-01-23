@@ -8,14 +8,19 @@
 <body>
     <div class="container">
         <h1 class="label">Sign up</h1>
-        <form class = "login_form" action="/signup/save" method="post" name="form" onsubmit="return validated()">
+        {{#if message}}
+            <div class="alertmessage" role="alert">
+                {{message}}
+            </div>
+        {{/if}}
+        <form class = "login_form" action="/signup/save" method="post" id="form">
             <div class = "font"> Username</div>
             <input autocomplete = "off" type="text" name="username">
             <div id="username_error">Please enter username</div>
             <div class ="font font2">Password</div>
             <input type= "password" name="password">
             <div id="password_error">Please enter password</div>
-            <button type="submit" >Submit</button>
+            <button type="button" id="submit-button">Submit</button>
         </form>
     </div>
 
@@ -25,21 +30,13 @@
 <script src="/assets/js/bootstrap.js"></script>
 <script>
 
-    //Create connection
-    const mysql = require('mysql'); 
-    const conn = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'SKZI86477',
-    database: 'crud_db'
-});
- 
-//connect to database
-conn.connect((err) =>{
-  if(err) throw err;
-  console.log('Mysql Connected...');
-});
   //Validate inputs
+
+$("#submit-button").click(function() {
+   if(validated()){
+       $("#form").submit();
+   }
+});
 
 var username = document.forms['form']['username'];
 var password = document.forms['form']['password'];
@@ -51,38 +48,30 @@ username.addEventListener('textInput', username_Verify);
 password.addEventListener('textInput', password_Verify);
 
 function validated(){
+    var valid = true;
+
     if (username.value.length == 0){
         username.style.border ="1px solid red";
         username_error.style.display = "block";
         username.focus();
-        return false;
+        valid = false;
     }
     if (password.value.length == 0){
         password.style.border ="1px solid red";
         password_error.style.display = "block";
         password.focus();
-        return false;
+        valid = false;
     } 
+    return valid;
 }
+
 
 function username_Verify(){
     if (username.value.length >=1){
         username.style.border = "1px solid silver";
         username_error.style.display = "none";
-        let sql = "SELECT * WHERE username="+username.value+"";
-        let query = conn.query(sql, (err, results) => {
-            if(err) throw err;
-            if(results.length === 0){
-               return true;
-            }
-            alert("Username already exists.");
-            username.style.border ="1px solid red";
-            username_error.style.display = "block";
-            username.focus();
-            return false;
-
-          });
-        }
+        return true;
+    }
 }
 
 function password_Verify(){
